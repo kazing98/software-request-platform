@@ -1,0 +1,25 @@
+[project]
+name = "software-req"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { email = "rohan.panda80@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "django>=5.2.18",
+]
+
+[project.scripts]
+software-req = "software_req:main"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-django>=4.14.0",
+]
