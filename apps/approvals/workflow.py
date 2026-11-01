@@ -1,19 +1,42 @@
-def approve_request(request, actor):
-    if request["status"] == "PENDING_MANAGER_1" and request["approver_1"] == actor:
-        request["status"] = "PENDING_MANAGER_2"
+from enum import Enum
 
-    elif request["status"] == "PENDING_MANAGER_2" and request["approver_2"] == actor:
-        request["status"] = "APPROVED"
+class RequestStatus(Enum):
+    PENDING_MANAGER_1 = "PENDING_MANAGER_1"
+    PENDING_MANAGER_2 = "PENDING_MANAGER_2"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
 
-    else:
-        raise ValueError("Approval not allowed for this actor or request state")
+class SoftwareRequest:
 
-def reject_request(request, actor):
-    if request["status"] == "PENDING_MANAGER_1" and request["approver_1"] == actor:
-        request["status"] = "REJECTED"
+    def __init__(self, requester, software, approver_1, approver_2, status=RequestStatus.PENDING_MANAGER_1):
+        if approver_1 == approver_2:
+            raise ValueError("Approvers must be different.")
 
-    elif request["status"] == "PENDING_MANAGER_2" and request["approver_2"] == actor:
-        request["status"] = "REJECTED"
+        if status not in {item.value for item in RequestStatus}:
+            raise ValueError("Invalid request status.")
 
-    else:
-        raise ValueError("Approval not allowed for this actor or request state")
+        self.requester = requester
+        self.software = software
+        self.approver_1 = approver_1
+        self.approver_2 = approver_2
+        self.status = RequestStatus(status)
+
+    def approve(self, actor):
+        if self.status == RequestStatus.PENDING_MANAGER_1 and self.approver_1 == actor:
+            self.status = RequestStatus.PENDING_MANAGER_2
+
+        elif self.status == RequestStatus.PENDING_MANAGER_2 and self.approver_2 == actor:
+            self.status = RequestStatus.APPROVED
+
+        else:
+            raise ValueError("Approval not allowed for this actor or request state")
+
+    def reject(self, actor):
+        if self.status == RequestStatus.PENDING_MANAGER_1 and self.approver_1 == actor:
+            self.status = RequestStatus.REJECTED
+
+        elif self.status == RequestStatus.PENDING_MANAGER_2 and self.approver_2 == actor:
+            self.status = RequestStatus.REJECTED
+
+        else:
+            raise ValueError("Approval not allowed for this actor or request state")
